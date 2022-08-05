@@ -24,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         """Update and return user."""
-        password = validated_data.pop('password', None)
+        password = validated_data.pop("password", None)
         user = super().update(instance, validated_data)
 
         if password:
@@ -45,10 +45,10 @@ class AuthTokenSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         """Validate and authenticate the user."""
-        email = attrs.get('email')
-        password = attrs.get('password')
+        email = attrs.get("email")
+        password = attrs.get("password")
         user = authenticate(
-            request=self.context.get('request'),
+            request=self.context.get("request"),
             username=email,
             password=password,
         )
@@ -56,5 +56,5 @@ class AuthTokenSerializer(serializers.Serializer):
             msg = _("Unable to authenticate with provided credentials.")
             raise serializers.ValidationError(msg, code="authorization")
 
-        attrs['user'] = user
+        attrs["user"] = user
         return attrs

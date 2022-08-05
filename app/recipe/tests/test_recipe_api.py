@@ -74,7 +74,10 @@ class PrivateRecipesApiTests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.user = create_user(email="user@example.com", password="testpass123")
+        self.user = create_user(
+            email="user@example.com",
+            password="testpass123",
+        )
         self.client.force_authenticate(self.user)
 
     def test_retrieve_recipes(self):
@@ -91,7 +94,10 @@ class PrivateRecipesApiTests(TestCase):
 
     def test_recipes_list_limited_to_user(self):
         """Test list of recipes is limited to authenticated user."""
-        other_user = create_user(email="other@example.com", password="testpass123")
+        other_user = create_user(
+            email="other@example.com",
+            password="testpass123",
+        )
         create_recipe(user=other_user)
         create_recipe(user=self.user)
 
@@ -171,7 +177,10 @@ class PrivateRecipesApiTests(TestCase):
 
     def test_update_user_returns_errors(self):
         """Test changing the recipe user results in an error."""
-        new_user = create_user(email="user2@example.com", password="testpass123")
+        new_user = create_user(
+            email="user2@example.com",
+            password="testpass123",
+        )
         recipe = create_recipe(user=self.user)
 
         payload = {"user": new_user.id}
@@ -193,7 +202,10 @@ class PrivateRecipesApiTests(TestCase):
 
     def test_delete_other_users_recipe_error(self):
         """Test trying to delete another users recipe gives error."""
-        new_user = create_user(email="user2@example.com", password="testpass123")
+        new_user = create_user(
+            email="user2@example.com",
+            password="testpass123",
+        )
         recipe = create_recipe(user=new_user)
 
         url = detail_url(recipe.id)
@@ -316,9 +328,12 @@ class PrivateRecipesApiTests(TestCase):
             ).exists()
             self.assertTrue(exists)
 
-    def test_create_recipe_with_existing_tags(self):
+    def test_create_recipe_with_existing_ingredients(self):
         """Test creating a recipe with existing ingredients."""
-        ingredient_lemon = Ingredient.objects.create(user=self.user, name="Lemon")
+        ingredient_lemon = Ingredient.objects.create(
+            user=self.user,
+            name="Lemon",
+        )
         payload = {
             "title": "Vietnamese Soup",
             "time_minutes": 60,
@@ -406,18 +421,18 @@ class ImageUploadTests(TestCase):
             img = Image.new("RGB", (10, 10))
             img.save(image_file, format="JPEG")
             image_file.seek(0)
-            payload = {'image': image_file}
+            payload = {"image": image_file}
             res = self.client.post(url, payload, format="multipart")
 
         self.recipe.refresh_from_db()
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertIn('image', res.data)
+        self.assertIn("image", res.data)
         self.assertTrue(os.path.exists(self.recipe.image.path))
 
     def test_uplaod_image_bad_request(self):
         """Test updating invalid image."""
         url = image_upload_url(self.recipe.id)
-        payload = {'image': 'notanimage'}
+        payload = {"image": "notanimage"}
         res = self.client.post(url, payload, format="multipart")
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
